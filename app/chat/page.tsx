@@ -5,12 +5,14 @@ import { supabase } from "@/lib/supabase";
 
 export default function ChatPage() {
   const [message, setMessage] = useState("");
+  const [reply, setReply] = useState("");
   const [status, setStatus] = useState("");
 
-  async function saveMessage() {
+  async function sendMessage() {
     if (!message.trim()) return;
 
-    setStatus("Saving...");
+    setStatus("Tinker is thinking...");
+    setReply("");
 
     const {
       data: { user },
@@ -25,7 +27,7 @@ export default function ChatPage() {
       .from("conversations")
       .insert({
         user_id: user.id,
-        title: "My first Tinker conversation",
+        title: "Tinker conversation",
       })
       .select()
       .single();
@@ -35,13 +37,39 @@ export default function ChatPage() {
       return;
     }
 
-    const { error: messageError } = await supabase.from("messages").insert({
+    const { error: userMessageError } = await supabase.from("messages").insert({
       conversation_id: conversation.id,
       role: "user",
       content: message,
     });
 
-    setStatus(messageError ? messageError.message : "Message saved to Supabase.");
+    if (userMessageError) {
+      setStatus(userMessageError.message);
+      return;
+    }
+
+    const response = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message }),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      setStatus(result.error || "Something went wrong.");
+      return;
+    }
+
+    setReply(result.reply);
+
+    await supabase.from("messages").insert({
+      conversation_id: conversation.id,
+      role: "assistant",
+      content: result.reply,
+    });
+
+    setStatus("Saved to Supabase.");
   }
 
   return (
@@ -59,10 +87,16 @@ export default function ChatPage() {
 
         <button
           className="mt-4 rounded-full bg-slate-800 px-5 py-3 font-semibold text-white"
-          onClick={saveMessage}
+          onClick={sendMessage}
         >
-          Save message
+          Send message
         </button>
+
+        {reply && (
+          <div className="mt-6 rounded-xl bg-amber-50 p-4 text-slate-700">
+            {reply}
+          </div>
+        )}
 
         <p className="mt-4 text-sm text-slate-600">{status}</p>
       </div>
