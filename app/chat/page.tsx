@@ -98,7 +98,45 @@ export default function ChatPage() {
     setStatus("Started a new topic.");
     textareaRef.current?.focus();
   }
+async function extractMemoryCandidates(
+  userId: string,
+  activeConversationId: string,
+  topicMessages: ChatMessage[],
+) {
+  if (topicMessages.length < 6 || topicMessages.length % 6 !== 0) {
+    return;
+  }
 
+  const response = await fetch("/api/memory", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ messages: topicMessages }),
+  });
+
+  if (!response.ok) return;
+
+  const result = await response.json();
+
+  if (!result.memories?.length) return;
+
+  await supabase.from("child_memories").insert(
+    result.memories.map(
+      (memory: {
+        category: string;
+        memory: string;
+        confidence: number;
+      }) => ({
+        user_id: userId,
+        category: memory.category,
+        memory: memory.memory,
+        confidence: memory.confidence,
+        evidence_count: 1,
+        status: "candidate",
+        source_conversation_id: activeConversationId,
+      }),
+    ),
+  );
+}
   async function sendMessage() {
     if (!message.trim() || loading) return;
 
@@ -186,10 +224,19 @@ const response = await fetch("/api/chat", {
 
     const assistantReply = cleanReply(result.reply);
 
-    setMessages((current) => [
-      ...current,
-      { role: "assistant", content: assistantReply },
-    ]);
+    const updatedMessages = [
+  ...messages,
+  { role: "user" as const, content: userMessage },
+  { role: "assistant" as const, content: assistantReply },
+];
+
+setMessages(updatedMessages);
+
+await extractMemoryCandidates(
+  user.id,
+  activeConversationId,
+  updatedMessages,
+);
 
     await supabase.from("messages").insert({
       conversation_id: activeConversationId,
