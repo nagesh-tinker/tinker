@@ -156,3 +156,15 @@ git push
 - Let the user choose a previous topic
 - Add sign-out
 - Improve conversation titles
+
+## Completed milestone: connected page flow
+
+- Home page now links to `/login`
+- Successful login now redirects to `/chat`
+- Main user flow is now Home ? Login ? Chat
+
+## Next milestone
+
+- Build the recent topics screen
+- Let users reopen previous conversations
+- Add sign-out

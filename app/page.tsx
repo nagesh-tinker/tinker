@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-amber-50 px-6 text-center text-slate-800">
@@ -14,9 +16,12 @@ export default function Home() {
         thoughtful conversations.
       </p>
 
-      <button className="mt-8 rounded-full bg-slate-800 px-6 py-3 font-semibold text-white transition hover:bg-slate-700">
+      <Link
+        href="/login"
+        className="mt-8 rounded-full bg-slate-800 px-6 py-3 font-semibold text-white transition hover:bg-slate-700"
+      >
         Start exploring
-      </button>
+      </Link>
     </main>
   );
 }
