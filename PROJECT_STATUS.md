@@ -168,3 +168,21 @@ git push
 - Build the recent topics screen
 - Let users reopen previous conversations
 - Add sign-out
+
+## Completed milestone: Topics home
+
+- Login now redirects to `/topics`
+- Added recent topics screen
+- Recent conversations load from Supabase
+- Users can reopen a previous topic
+- Users can start a new topic
+- Added sign-out
+- Added a `? Topics` link to the chat screen
+- Preserved the child-friendly card-based experience
+
+## Next milestone
+
+- Improve conversation titles
+- Add better loading and empty states
+- Add authentication protection to chat
+- Consider moving from localStorage routing to `/chat/[id]`

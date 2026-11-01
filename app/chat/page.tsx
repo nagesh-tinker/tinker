@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import Link from "next/link";
 
 type ChatMessage = {
   role: "user" | "assistant";
@@ -199,23 +200,23 @@ if (conversationId) {
     <main className="min-h-screen overflow-hidden bg-amber-50 px-4 py-8 sm:px-6">
       <div className="mx-auto flex h-[calc(100vh-4rem)] min-h-0 w-full max-w-2xl flex-col rounded-3xl bg-white shadow-sm">
         <header className="flex items-center justify-between border-b px-6 py-5">
-          <div>
-            <p className="text-xs font-bold tracking-[0.3em] text-orange-500">
-              TINKER
-            </p>
+  <div>
+    <p className="text-xs font-bold tracking-[0.3em] text-orange-500">
+      TINKER
+    </p>
 
-            <h1 className="mt-1 text-2xl font-bold text-slate-800">
-              Let’s explore together
-            </h1>
-          </div>
+    <h1 className="mt-1 text-2xl font-bold text-slate-800">
+      Let’s explore together
+    </h1>
+  </div>
 
-          <button
-            className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
-            onClick={startNewTopic}
-          >
-            New topic
-          </button>
-        </header>
+  <Link
+    href="/topics"
+    className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+  >
+    ← Topics
+  </Link>
+</header>
 
         <section className="min-h-0 flex-1 space-y-4 overflow-y-auto p-6">
           {loadingHistory && (

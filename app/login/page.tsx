@@ -24,7 +24,7 @@ export default function LoginPage() {
       return;
     }
 
-    router.push("/chat");
+    router.push("/topics");
   }
 
   return (
