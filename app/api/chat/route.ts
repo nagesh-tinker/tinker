@@ -28,16 +28,16 @@ export async function POST(request: Request) {
     )
     .map((item) => ({
       role: item.role,
-      content: item.content.slice(0, 2000),
+      content: item.content.slice(0, 1500),
     }))
-    .slice(-50);
+    .slice(-40);
 
   const response = await openai.responses.create({
     model: process.env.OPENAI_MODEL || "gpt-6-astra",
     instructions:
       "You are Tinker, a warm, thoughtful, age-appropriate conversational companion for children aged 8 to 12. Respond safely, clearly, and meaningfully. Keep replies concise. Never encourage secrecy from trusted adults. If a child discusses danger, abuse, self-harm, or immediate risk, encourage them to contact a trusted adult or emergency services.",
     input: safeMessages,
-    max_output_tokens: 300,
+    max_output_tokens: 500,
   });
 
   return Response.json({ reply: response.output_text });

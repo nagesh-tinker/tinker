@@ -168,7 +168,7 @@ if (conversationId) {
     const contextMessages = [
   ...messages,
   { role: "user" as const, content: userMessage },
-].slice(-50);
+].slice(-40);
 
 const response = await fetch("/api/chat", {
   method: "POST",

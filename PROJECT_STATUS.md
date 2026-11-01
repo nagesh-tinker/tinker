@@ -218,3 +218,11 @@ git push
 - Improve sign-out behavior
 - Improve conversation titles
 - Review safety and moderation behavior
+
+## Updated AI usage limits
+
+- Individual messages are limited to 1,500 characters
+- The latest 40 messages are sent as topic context
+- AI responses allow up to 500 output tokens
+- Limits are designed to balance usefulness, child-friendly responses, and cost
+
