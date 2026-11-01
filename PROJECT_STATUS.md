@@ -260,3 +260,12 @@ git push
 - Let users view and delete memories
 - Improve authentication and route protection
 - Add guardian controls before real child use
+
+## Completed fix: reliable new topics
+
+- Starting a new topic now forces a fresh chat load
+- Previous topic messages are not carried into the new topic
+- Approved long-term memories remain available when relevant
+- Tested approved Jupiter memory across multiple topics
+- Confirmed relevant personalization without conversation mixing
+

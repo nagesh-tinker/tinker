@@ -53,10 +53,10 @@ export default function TopicsPage() {
     router.push("/chat");
   }
 
-  function startNewTopic() {
-    window.localStorage.removeItem(ACTIVE_CONVERSATION_KEY);
-    router.push("/chat");
-  }
+ function startNewTopic() {
+  window.localStorage.removeItem(ACTIVE_CONVERSATION_KEY);
+  window.location.href = "/chat?new=1";
+}
 
   async function signOut() {
     await supabase.auth.signOut();
