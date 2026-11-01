@@ -269,3 +269,19 @@ git push
 - Tested approved Jupiter memory across multiple topics
 - Confirmed relevant personalization without conversation mixing
 
+
+## Completed milestone: user-facing memory controls
+
+- Added the `/memory` page
+- Users can view saved candidate and approved memories
+- Users can remove individual memories
+- Users can clear all memories
+- Added a Memories link to the Topics home
+- Kept memory access protected by Row Level Security
+
+## Next milestone
+
+- Add server-side authentication protection
+- Ensure chat and memory APIs verify the signed-in user
+- Move approved-memory retrieval fully to the server
+- Add guardian controls before real child use

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+import Link from "next/link";
 
 type Topic = {
   id: string;
@@ -81,7 +82,12 @@ export default function TopicsPage() {
               Pick up a previous topic or start something new.
             </p>
           </div>
-
+<Link
+  href="/memory"
+  className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+>
+  Memories
+</Link>
           <button
             onClick={signOut}
             className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
