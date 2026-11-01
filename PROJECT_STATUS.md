@@ -226,3 +226,19 @@ git push
 - AI responses allow up to 500 output tokens
 - Limits are designed to balance usefulness, child-friendly responses, and cost
 
+
+## Completed milestone: candidate memory extraction
+
+- Added a server-side memory extraction route
+- Extracts only safe categories
+- Limits extraction to up to three candidates
+- Runs after several messages rather than every message
+- Stores candidate interests and hobbies in Supabase
+- Links memories to the source conversation
+- Keeps candidates separate from approved memories
+
+## Next milestone
+
+- Retrieve only approved memories
+- Include relevant approved memories in future prompts
+- Add memory review and deletion controls
