@@ -285,3 +285,21 @@ git push
 - Ensure chat and memory APIs verify the signed-in user
 - Move approved-memory retrieval fully to the server
 - Add guardian controls before real child use
+
+## Completed milestone: automated memory lifecycle
+
+- Added stable `memory_key` values
+- Related memory descriptions now merge
+- Evidence counts increase across repeated observations
+- Conversation counts track supporting topics
+- Candidates automatically become approved when rules are met
+- Approved memories are used in relevant responses
+- Memory extraction remains limited to safe categories
+- Child-facing memory management remains disabled
+
+## Next milestone
+
+- Improve unique-topic counting
+- Add memory weakening and removal rules
+- Move memory retrieval fully server-side
+- Add guardian-only memory controls

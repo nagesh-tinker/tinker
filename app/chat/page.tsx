@@ -1,8 +1,8 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useRef, useState } from "react";
-import { supabase } from "@/lib/supabase";
 import Link from "next/link";
+import { supabase } from "@/lib/supabase";
 
 type ChatMessage = {
   role: "user" | "assistant";
@@ -66,6 +66,7 @@ export default function ChatPage() {
         .order("created_at", { ascending: true });
 
       setConversationId(savedConversationId);
+
       setMessages(
         (savedMessages || []).filter(
           (item): item is ChatMessage =>
@@ -98,45 +99,89 @@ export default function ChatPage() {
     setStatus("Started a new topic.");
     textareaRef.current?.focus();
   }
-async function extractMemoryCandidates(
-  userId: string,
-  activeConversationId: string,
-  topicMessages: ChatMessage[],
-) {
-  if (topicMessages.length < 6 || topicMessages.length % 6 !== 0) {
-    return;
+
+  async function extractMemoryCandidates(
+    userId: string,
+    activeConversationId: string,
+    topicMessages: ChatMessage[],
+  ) {
+    if (topicMessages.length < 6 || topicMessages.length % 6 !== 0) {
+      return;
+    }
+
+    const response = await fetch("/api/memory", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ messages: topicMessages }),
+    });
+
+    if (!response.ok) return;
+
+    const result = await response.json();
+
+    if (!result.memories?.length) return;
+
+    for (const memory of result.memories) {
+      const { data: existing } = await supabase
+        .from("child_memories")
+        .select(
+          "id, confidence, evidence_count, conversation_count, status, source_conversation_id",
+        )
+        .eq("user_id", userId)
+        .eq("memory_key", memory.memory_key)
+        .maybeSingle();
+
+      if (existing?.status === "dismissed") {
+        continue;
+      }
+
+      if (existing) {
+        const newEvidenceCount = existing.evidence_count + 1;
+
+        const newConversationCount =
+          existing.source_conversation_id === activeConversationId
+            ? existing.conversation_count
+            : existing.conversation_count + 1;
+
+        const newConfidence = Math.max(
+          existing.confidence,
+          Number(memory.confidence),
+        );
+
+        const shouldApprove =
+          newConfidence >= 0.7 &&
+          newEvidenceCount >= 2 &&
+          newConversationCount >= 2;
+
+        await supabase
+          .from("child_memories")
+          .update({
+            memory: memory.memory,
+            confidence: newConfidence,
+            evidence_count: newEvidenceCount,
+            conversation_count: newConversationCount,
+            status: shouldApprove ? "approved" : existing.status,
+            source_conversation_id: activeConversationId,
+            last_seen: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", existing.id);
+      } else {
+        await supabase.from("child_memories").insert({
+          user_id: userId,
+          memory_key: memory.memory_key,
+          category: memory.category,
+          memory: memory.memory,
+          confidence: Number(memory.confidence),
+          evidence_count: 1,
+          conversation_count: 1,
+          status: "candidate",
+          source_conversation_id: activeConversationId,
+        });
+      }
+    }
   }
 
-  const response = await fetch("/api/memory", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ messages: topicMessages }),
-  });
-
-  if (!response.ok) return;
-
-  const result = await response.json();
-
-  if (!result.memories?.length) return;
-
-  await supabase.from("child_memories").insert(
-    result.memories.map(
-      (memory: {
-        category: string;
-        memory: string;
-        confidence: number;
-      }) => ({
-        user_id: userId,
-        category: memory.category,
-        memory: memory.memory,
-        confidence: memory.confidence,
-        evidence_count: 1,
-        status: "candidate",
-        source_conversation_id: activeConversationId,
-      }),
-    ),
-  );
-}
   async function sendMessage() {
     if (!message.trim() || loading) return;
 
@@ -163,9 +208,9 @@ async function extractMemoryCandidates(
 
     let activeConversationId: string;
 
-if (conversationId) {
-  activeConversationId = conversationId;
-} else {
+    if (conversationId) {
+      activeConversationId = conversationId;
+    } else {
       const { data: conversation, error } = await supabase
         .from("conversations")
         .insert({
@@ -183,6 +228,7 @@ if (conversationId) {
 
       activeConversationId = conversation.id;
       setConversationId(activeConversationId);
+
       window.localStorage.setItem(
         ACTIVE_CONVERSATION_KEY,
         activeConversationId,
@@ -204,26 +250,26 @@ if (conversationId) {
     }
 
     const contextMessages = [
-  ...messages,
-  { role: "user" as const, content: userMessage },
-].slice(-40);
+      ...messages,
+      { role: "user" as const, content: userMessage },
+    ].slice(-40);
 
-const { data: approvedMemories } = await supabase
-  .from("child_memories")
-  .select("category, memory, confidence")
-  .eq("user_id", user.id)
-  .eq("status", "approved")
-  .order("confidence", { ascending: false })
-  .limit(5);
+    const { data: approvedMemories } = await supabase
+      .from("child_memories")
+      .select("category, memory, confidence")
+      .eq("user_id", user.id)
+      .eq("status", "approved")
+      .order("confidence", { ascending: false })
+      .limit(5);
 
-const response = await fetch("/api/chat", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-  messages: contextMessages,
-  memories: approvedMemories || [],
-}),
-});
+    const response = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        messages: contextMessages,
+        memories: approvedMemories || [],
+      }),
+    });
 
     const result = await response.json();
 
@@ -236,24 +282,24 @@ const response = await fetch("/api/chat", {
     const assistantReply = cleanReply(result.reply);
 
     const updatedMessages = [
-  ...messages,
-  { role: "user" as const, content: userMessage },
-  { role: "assistant" as const, content: assistantReply },
-];
+      ...messages,
+      { role: "user" as const, content: userMessage },
+      { role: "assistant" as const, content: assistantReply },
+    ];
 
-setMessages(updatedMessages);
-
-await extractMemoryCandidates(
-  user.id,
-  activeConversationId,
-  updatedMessages,
-);
+    setMessages(updatedMessages);
 
     await supabase.from("messages").insert({
       conversation_id: activeConversationId,
       role: "assistant",
       content: assistantReply,
     });
+
+    await extractMemoryCandidates(
+      user.id,
+      activeConversationId,
+      updatedMessages,
+    );
 
     setStatus("Saved to Supabase.");
     setLoading(false);
@@ -263,23 +309,23 @@ await extractMemoryCandidates(
     <main className="min-h-screen overflow-hidden bg-amber-50 px-4 py-8 sm:px-6">
       <div className="mx-auto flex h-[calc(100vh-4rem)] min-h-0 w-full max-w-2xl flex-col rounded-3xl bg-white shadow-sm">
         <header className="flex items-center justify-between border-b px-6 py-5">
-  <div>
-    <p className="text-xs font-bold tracking-[0.3em] text-orange-500">
-      TINKER
-    </p>
+          <div>
+            <p className="text-xs font-bold tracking-[0.3em] text-orange-500">
+              TINKER
+            </p>
 
-    <h1 className="mt-1 text-2xl font-bold text-slate-800">
-      Let’s explore together
-    </h1>
-  </div>
+            <h1 className="mt-1 text-2xl font-bold text-slate-800">
+              Let’s explore together
+            </h1>
+          </div>
 
-  <Link
-    href="/topics"
-    className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
-  >
-    ← Topics
-  </Link>
-</header>
+          <Link
+            href="/topics"
+            className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+          >
+            ← Topics
+          </Link>
+        </header>
 
         <section className="min-h-0 flex-1 space-y-4 overflow-y-auto p-6">
           {loadingHistory && (
