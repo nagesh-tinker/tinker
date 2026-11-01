@@ -295,11 +295,11 @@ export default function ChatPage() {
       content: assistantReply,
     });
 
-    await extractMemoryCandidates(
-      user.id,
-      activeConversationId,
-      updatedMessages,
-    );
+    void extractMemoryCandidates(
+  user.id,
+  activeConversationId,
+  updatedMessages,
+);
 
     setStatus("Saved to Supabase.");
     setLoading(false);

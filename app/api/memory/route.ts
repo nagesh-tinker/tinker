@@ -38,7 +38,7 @@ export async function POST(request: Request) {
     .join("\n");
 
   const response = await openai.responses.create({
-    model: process.env.OPENAI_MODEL || "gpt-6-astra",
+    model: process.env.OPENAI_MEMORY_MODEL || "gpt-6-luna",
     instructions: `
 You identify only safe, useful, non-sensitive long-term preferences from a child's conversation.
 
