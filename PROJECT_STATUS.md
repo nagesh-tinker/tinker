@@ -186,3 +186,19 @@ git push
 - Add better loading and empty states
 - Add authentication protection to chat
 - Consider moving from localStorage routing to `/chat/[id]`
+
+## Completed milestone: production configuration
+
+- Added Supabase variables to Vercel
+- Added OpenAI variables to Vercel
+- Kept the OpenAI API key private
+- Redeployed successfully
+- Tested the live Vercel application
+- Confirmed the main flow works in production
+
+## Next milestone
+
+- Improve topic titles
+- Add authentication protection to chat
+- Add a proper sign-out experience
+- Consider moving to `/chat/[id]` routes
