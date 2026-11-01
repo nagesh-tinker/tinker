@@ -202,3 +202,19 @@ git push
 - Add authentication protection to chat
 - Add a proper sign-out experience
 - Consider moving to `/chat/[id]` routes
+
+## Completed milestone: topic-aware AI context
+
+- OpenAI receives only the active topic’s messages
+- Context is limited to the latest 50 messages
+- Individual messages are capped
+- AI responses are limited in length
+- Safety instructions are applied to every request
+- Different topics remain separate
+
+## Next milestone
+
+- Add protected routes
+- Improve sign-out behavior
+- Improve conversation titles
+- Review safety and moderation behavior

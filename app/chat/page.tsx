@@ -165,11 +165,16 @@ if (conversationId) {
       return;
     }
 
-    const response = await fetch("/api/chat", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: userMessage }),
-    });
+    const contextMessages = [
+  ...messages,
+  { role: "user" as const, content: userMessage },
+].slice(-50);
+
+const response = await fetch("/api/chat", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ messages: contextMessages }),
+});
 
     const result = await response.json();
 
