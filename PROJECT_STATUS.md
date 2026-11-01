@@ -242,3 +242,21 @@ git push
 - Retrieve only approved memories
 - Include relevant approved memories in future prompts
 - Add memory review and deletion controls
+
+## Completed milestone: approved memory personalization
+
+- Added the `child_memories` table
+- Added safe memory categories
+- Added candidate memory extraction
+- Added candidate and approved statuses
+- Added manual approval testing
+- Approved memories are included in relevant OpenAI prompts
+- Tinker uses memories selectively and naturally
+- Unrelated questions are not forced toward stored interests
+
+## Next milestone
+
+- Add a memory review screen
+- Let users view and delete memories
+- Improve authentication and route protection
+- Add guardian controls before real child use

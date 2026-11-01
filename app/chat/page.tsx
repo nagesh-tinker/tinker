@@ -208,10 +208,21 @@ if (conversationId) {
   { role: "user" as const, content: userMessage },
 ].slice(-40);
 
+const { data: approvedMemories } = await supabase
+  .from("child_memories")
+  .select("category, memory, confidence")
+  .eq("user_id", user.id)
+  .eq("status", "approved")
+  .order("confidence", { ascending: false })
+  .limit(5);
+
 const response = await fetch("/api/chat", {
   method: "POST",
   headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ messages: contextMessages }),
+  body: JSON.stringify({
+  messages: contextMessages,
+  memories: approvedMemories || [],
+}),
 });
 
     const result = await response.json();
