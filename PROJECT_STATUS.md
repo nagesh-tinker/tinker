@@ -139,3 +139,20 @@ git push
 - Load previous conversation history from Supabase
 - Keep one conversation instead of creating a new one for every message
 - Add a sign-out button
+
+## Completed milestone: topic-based conversations
+
+- One conversation is reused for multiple messages
+- Active conversation ID is remembered locally
+- Previous messages reload after refresh
+- New topic clears the current view
+- New topic creates a new database conversation on the next message
+- Empty conversations are not created
+- Topic ownership is protected by Supabase Row Level Security
+
+## Next milestone
+
+- Add a recent topics screen
+- Let the user choose a previous topic
+- Add sign-out
+- Improve conversation titles
